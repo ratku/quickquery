@@ -10,6 +10,5 @@ public class quickQueryApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(quickQueryApplication.class, args);
-	
 	}
 }

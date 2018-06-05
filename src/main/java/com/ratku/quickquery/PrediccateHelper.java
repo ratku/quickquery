@@ -11,6 +11,10 @@ import javax.persistence.criteria.Root;
 
 import com.ratku.sample.dataobject.UcUser;
 
+/**
+ * @author huang
+ *
+ */
 public class PrediccateHelper {
 
 	///create search Predicate
@@ -63,24 +67,21 @@ public class PrediccateHelper {
 		return null;
 	}
 			
-	private static <T> Predicate toPredicate(Root<T> root, CriteriaBuilder cb, CriteriaFieldInfo info) {
-		if (!info.IsAppendQuery()) {
-			return null;
-		}
+	private static <T> Predicate toPredicate(Root<T> root, CriteriaBuilder cb, ConditionField condition) {
 
 		Predicate p = null;
 		try {
-			CriteriaOperateType ctype = CriteriaOperateType.GetCriteriaOperateType(info.criteriaOperate);
+			CriteriaOperateType ctype = CriteriaOperateType.GetCriteriaOperateType(condition.criteriaOperate);
 
 			switch (ctype) {
 			case Compare: {
-				Path<Integer> path = root.<Integer> get(info.fieldName);
-				p = toPredicateCompare(cb, path, info.fieldValue, info.criteriaOperate);
+				Path<Integer> path = root.<Integer> get(condition.fieldName);
+				p = toPredicateCompare(cb, path, condition.fieldValue, condition.criteriaOperate);
 			}
 				break;
 			case Search: {
-				Expression<String> path = root.get(info.fieldName);
-				p = toPredicateSearch(cb, path, info.fieldValue, info.criteriaOperate);
+				Expression<String> path = root.get(condition.fieldName);
+				p = toPredicateSearch(cb, path, condition.fieldValue, condition.criteriaOperate);
 			}
 				break;
 			default:
@@ -95,10 +96,11 @@ public class PrediccateHelper {
 
 	}
 	
-	public static <T> Predicate toPredicate(Root<T> root, CriteriaBuilder cb, List<CriteriaFieldInfo> infoList) {
+	//create the search Predicate from List<ConditionField>
+	public static <T> Predicate toPredicate(Root<T> root, CriteriaBuilder cb, List<ConditionField> conditionList) {
 		Predicate p1 = null;
-		for (int i = 0; i < infoList.size(); i++) {
-			Predicate p2 = toPredicate(root, cb, infoList.get(i));
+		for (int i = 0; i < conditionList.size(); i++) {
+			Predicate p2 = toPredicate(root, cb, conditionList.get(i));
 			if (p2 != null) {
 				if (p1 == null) {
 					p1 = p2;
@@ -110,15 +112,12 @@ public class PrediccateHelper {
 		return p1;
 	}
 	
+	///create the search Predicate from CriteriaObject
 	public static <T> Predicate toPredicate(Root<T> root, CriteriaBuilder cb, Object CriteriaObject) {
-		List<CriteriaFieldInfo> infoList =CriteriaFieldHelper.GetCriteriaFieldMapInfo(CriteriaObject);	
+		List<ConditionField> infoList =ConditionFieldHelper.GetConditionFields(CriteriaObject);	
 		return toPredicate(root,cb,infoList);
 	}
 	
-	public static <T> Predicate toPredicate(Root<T> root, CriteriaBuilder cb, Object CriteriaObject,Class<?> userCla) {
-		List<CriteriaFieldInfo> infoList =CriteriaFieldHelper.GetCriteriaFieldMapInfo(CriteriaObject,userCla);	
-		return toPredicate(root,cb,infoList);
-	}
 	
 	
 }

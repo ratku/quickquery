@@ -2,14 +2,11 @@ package com.ratku.quickquery;
 
 import java.lang.reflect.Field;
 
-public class CriteriaFieldInfo {
+public class CriteriaFieldInfo extends ConditionField {
 
-	CriteriaOperate criteriaOperate;
-	Object fieldValue ;
-	Object ignoreValue ;
-	String fieldName ;
 	Field field;
-	//Boolean comparable;
+	
+	Object ignoreValue ;
 	
 	public Boolean IsAppendQuery() {
 

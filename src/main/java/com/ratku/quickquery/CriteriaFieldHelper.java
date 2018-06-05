@@ -9,65 +9,25 @@ import com.ratku.sample.criteriadao.UcUserCriteriaFieldDao;
 
 public class CriteriaFieldHelper {
 
-	private static Object GetFieldValue(Object CriteriaObject,Field field)
-    {	
-		try {
-			return field.get(CriteriaObject);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-    }
-	
 	private static CriteriaFieldInfo GetCriteriaFieldMapInfo(Field field)
     {
 		CriteriaField annotation =  field.getAnnotation(CriteriaField.class);
-		if(annotation == null){
+		if(annotation != null){	
+			CriteriaFieldInfo info = new CriteriaFieldInfo();
+			info.fieldName = field.getName();
+			info.ignoreValue = annotation.IgnoreValue();
+			info.criteriaOperate = annotation.criteriaOperate();
+			info.field = field;
+			return info;
+		}
+		else
+		{
 			return null;
-		}	
-		CriteriaFieldInfo info = new CriteriaFieldInfo();
-		info.fieldName = field.getName();
-		info.ignoreValue = annotation.IgnoreValue();
-		info.criteriaOperate = annotation.criteriaOperate();
-		info.field = field;
-		return info;
+		}
+		
     }
 		
-	public static List<CriteriaFieldInfo> GetCriteriaFieldMapInfo(Object CriteriaObject)
-    {
-		List<CriteriaFieldInfo> criteriaFieldInfoList = new ArrayList<CriteriaFieldInfo>();
-
-		String className = CriteriaObject.getClass().getName().toString();
-		className = className.split("\\$")[0];
-		Class<?> userCla;
-		try {
-			userCla = Class.forName(className );
-			criteriaFieldInfoList = GetCriteriaFieldMapInfo(CriteriaObject,userCla);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        return criteriaFieldInfoList;
-    }
-	
-	public static List<CriteriaFieldInfo> GetCriteriaFieldMapInfo(Object CriteriaObject,Class<?> userCla)
-    {
-		List<CriteriaFieldInfo> criteriaFieldInfoList = GetCriteriaFieldMapInfo(userCla);
-
-		for(int i =0;i < criteriaFieldInfoList.size();i++)
-		{
-			CriteriaFieldInfo info  =  criteriaFieldInfoList.get(i);
-			info.fieldValue = GetFieldValue(CriteriaObject,info.field);
-		}	
-	
-        return criteriaFieldInfoList;
-    }
-	
-	private static List<CriteriaFieldInfo> GetCriteriaFieldMapInfo(Class<?> userCla)
+	public static List<CriteriaFieldInfo> GetCriteriaFieldMapInfo(Class<?> userCla)
     {
 		List<CriteriaFieldInfo> criteriaFieldInfoList = new ArrayList<CriteriaFieldInfo>();
 		Field[] fields = userCla.getDeclaredFields();

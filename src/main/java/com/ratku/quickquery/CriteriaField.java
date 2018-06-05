@@ -12,4 +12,5 @@ public @interface CriteriaField {
 	CriteriaOperate criteriaOperate();
 	
 	String IgnoreValue() ;
+	
 }
